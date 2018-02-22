@@ -8,7 +8,7 @@
     $(document).ready(function(){
       socket = io.connect('http://' + document.domain + ':' + location.port + '/mynamespace');
       socket.on('response', function(msg){
-        $('#sentence').text(msg.data);
+        $('#sentence').text(Date.now() + '\n' + msg.data);
       });
     });
     </script>
