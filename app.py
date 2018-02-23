@@ -37,7 +37,7 @@ def background_thread(data):
         if start_time is None:
             start_time = current_milli_time()
         else:
-            if current_milli_time() - start_time > 350:
+            if current_milli_time() - start_time > 200:
                 start_time = current_milli_time()
                 result = watch_sensor.feature_generate(windows)
                 predicted = watch_svm.predict(result)
@@ -48,12 +48,17 @@ def background_thread(data):
                     gesture = "rub"
                 elif predicted == 3:
                     gesture = "squeeze"
+                elif predicted == 4:
+                    gesture = "wave"
+                print watch_svm.predict_prob(result), gesture
+                '''
                 socketio.emit("response", {
                     'type': 'Server event',
                     'data': gesture,
                     },
                     namespace='/mynamespace',
                     broadcast=True)
+                '''
 
 @app.route('/')
 def index():

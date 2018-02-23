@@ -7,7 +7,7 @@ clf = svm.SVC(probability=True)
 def init():
     mypath = 'Sorted_squeeze_added'
     onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-    for onlyfile in onlyfiles[:1]:
+    for onlyfile in onlyfiles:
         with open(mypath + '/'+ onlyfile, 'r') as f_r:
             lines = f_r.read().splitlines()
             train_x = []
@@ -61,7 +61,10 @@ def init():
             '''
 
 def predict(features):
+    #print preprocessing.scale(features)
     return clf.predict([preprocessing.scale(features)])[0]
 
 def predict_prob(features):
     return clf.predict_proba([preprocessing.scale(features)])[0]
+
+init()

@@ -4,7 +4,7 @@ import math
 def data_parser(raw, windows):
     data_list = raw.rstrip().split(',')
     data_type = int(data_list[0])
-    data_time = int(data_list[1]) / 1000000
+    data_time = int(data_list[1])
     data_x = float(data_list[2])
     data_y = float(data_list[3])
     data_z = float(data_list[4])
@@ -70,6 +70,7 @@ def feature_generate(windows):
                 rinterp_yz,
                 rinterp_xz,
                 ]
+
         # feature
         for rinterp in raw_features:
             mean = np.mean(rinterp)
