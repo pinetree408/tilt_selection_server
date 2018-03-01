@@ -1,23 +1,16 @@
 import numpy as np
 import math
 
-def data_parser(raw, windows):
-    data_list = raw.rstrip().split(',')
-    data_type = int(data_list[0])
-    data_time = int(data_list[1])
-    data_x = float(data_list[2])
-    data_y = float(data_list[3])
-    data_z = float(data_list[4])
-
+def data_parser(sens_type, sens_time, sens_x, sens_y, sens_z, windows):
     data_dict = {
-            'time': data_time,
-            'x': data_x,
-            'y': data_y,
-            'z': data_z,
+            'time': int(sens_time),
+            'x': float(sens_x),
+            'y': float(sens_y),
+            'z': float(sens_z),
             }
 
-    window = windows[data_type]
-    if len(window) != 0 and (data_time - window[0]['time']) > 1000:
+    window = windows[int(sens_type)]
+    if len(window) != 0 and (data_dict['time'] - window[0]['time']) > 1000:
         window.pop(0)
     window.append(data_dict)
 

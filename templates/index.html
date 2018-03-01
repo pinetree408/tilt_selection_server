@@ -8,7 +8,18 @@
     $(document).ready(function(){
       socket = io.connect('http://' + document.domain + ':' + location.port + '/mynamespace');
       socket.on('response', function(msg){
-        $('#sentence').text(Date.now() + '\n' + msg.data);
+	var gesture = '';
+	if (msg.data == 1) {
+          gesture = 'pinch';
+	} else if (msg.data == 4){
+          gesture = 'wave';
+	} else if (msg.data == 2){
+          gesture = 'rub';
+	} else {
+	  gesture = 'nothing';
+	}
+	console.log(gesture);
+        $('#sentence').text(gesture);
       });
     });
     </script>
