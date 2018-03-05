@@ -66,7 +66,6 @@ def disconnect():
 
 @socketio.on("request", namespace='/mynamespace')
 def request(sens_type, sens_time, sens_x, sens_y, sens_z):
-    emit("response", {'type': 'System', 'data': 'requested'})
     with thread_lock:
         thread = socketio.start_background_task(background_thread, sens_type, sens_time, sens_x, sens_y, sens_z)
 
