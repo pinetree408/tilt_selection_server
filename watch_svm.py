@@ -4,11 +4,13 @@ from sklearn import svm
 from sklearn import preprocessing
 
 clf = svm.SVC(probability=True)
+
+
 def init():
     mypath = 'Sorted_squeeze_added'
     onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     for onlyfile in onlyfiles[:1]:
-        with open(mypath + '/'+ onlyfile, 'r') as f_r:
+        with open(mypath + '/' + onlyfile, 'r') as f_r:
             lines = f_r.read().splitlines()
             train_x = []
             train_y = []
@@ -26,9 +28,7 @@ def init():
                     gesture = 4
                 if not (gesture == 1 or gesture == 4):
                     continue
-                posture = line.split(', ')[1]
                 day = line.split(', ')[2]
-                window = line.split(', ')[3]
                 features = line.split(', ')[4:]
                 features = [float(feature) for feature in features]
                 if day == '1':
@@ -60,8 +60,10 @@ def init():
             print wave_pinch, wave_wave
             '''
 
+
 def predict(features):
     return clf.predict([preprocessing.scale(features)])[0]
+
 
 def predict_prob(features):
     return clf.predict_proba([preprocessing.scale(features)])[0]

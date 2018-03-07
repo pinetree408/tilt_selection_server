@@ -1,6 +1,7 @@
 import numpy as np
 import math
 
+
 def data_parser(sens_type, sens_time, sens_x, sens_y, sens_z, windows):
     data_dict = {
             'time': int(sens_time),
@@ -25,6 +26,7 @@ def data_parser(sens_type, sens_time, sens_x, sens_y, sens_z, windows):
             break
     return prepared
 
+
 def feature_generate(windows):
     features = []
     for index in [1, 4, 10]:
@@ -42,7 +44,8 @@ def feature_generate(windows):
 
         rinterp_m = []
         for x, y, z in zip(rinterp_x, rinterp_y, rinterp_z):
-            rinterp_m.append(math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2)))
+            rinterp_m.append(math.sqrt(
+                math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2)))
 
         rinterp_xy = []
         for x, y in zip(rinterp_x, rinterp_y):
@@ -76,6 +79,8 @@ def feature_generate(windows):
             fft_f = np.absolute(np.divide(np.fft.fft(rinterp), 100))[0:51]
             fft_f[1:len(fft_f)] = 2*fft_f[1:len(fft_f)]
 
-            features.extend(np.array([mean, sd, max_f, min_f, q1, q2, q3]).tolist() + fft_f[1:11].tolist())
+            features.extend(
+                    np.array([mean, sd, max_f, min_f, q1, q2, q3]).tolist()
+                    + fft_f[1:11].tolist())
 
     return features

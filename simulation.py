@@ -7,6 +7,8 @@ from sklearn import preprocessing
 import watch_sensor
 
 clf = svm.SVC(probability=True)
+
+
 def init():
     train_x = []
     train_y = []
@@ -22,10 +24,10 @@ def init():
 
         for gesture in ['pinch', 'wave', 'rub']:
             windows = {
-                    1: [], #acc
-                    4: [], #gyr
-                    10 : [] #lin
-                    }
+                1: [],  # acc
+                4: [],  # gyr
+                10: []  # lin
+            }
 
             target_list = []
             for k in range(3):
@@ -56,8 +58,10 @@ def init():
                                     'y': float(data_list[2]),
                                     'z': float(data_list[3]),
                                     }
-                            if 1000 <= data_dict['time']:
-                                if len(window) != 0 and (data_dict['time'] - window[0]['time']) > 1000:
+                            data_time = data_dict['time']
+                            if 1000 <= data_time:
+                                if len(window) != 0 and \
+                                        data_time - window[0]['time'] > 1000:
                                     windows[data_type].append(window)
                                     if len(windows[data_type]) == 20 * (j + 1):
                                         break
@@ -126,10 +130,12 @@ def init():
     print rub_pinch, rub_wave, rub_rub
     '''
 
+
 def predict(features):
     return clf.predict([preprocessing.scale(features)])[0]
+
 
 def predict_prob(features):
     return clf.predict_proba([preprocessing.scale(features)])[0]
 
-#init()
+# init()
