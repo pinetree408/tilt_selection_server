@@ -9,7 +9,7 @@ import watch_sensor
 clf = svm.SVC(probability=True)
 
 
-def init():
+def init(debug=False):
     train_x = []
     train_y = []
 
@@ -22,7 +22,7 @@ def init():
 
         pre_data = {}
 
-        for gesture in ['pinch', 'wave', 'rub']:
+        for gesture in ['pinch', 'wave', 'keep', 'tilit']:
             windows = {
                 1: [],  # acc
                 4: [],  # gyr
@@ -69,7 +69,7 @@ def init():
                                 window.append(data_dict)
             pre_data[gesture] = windows
 
-        for gesture in ['pinch', 'wave', 'rub']:
+        for gesture in ['pinch', 'wave', 'keep', 'tilit']:
             windows = pre_data[gesture]
             for i in range(len(windows[1])):
                 data = {
@@ -81,9 +81,12 @@ def init():
                 if gesture == 'pinch':
                     gesture_type = 1
                 elif gesture == 'wave':
-                    gesture_type = 4
-                elif gesture == 'rub':
                     gesture_type = 2
+                elif gesture == 'keep':
+                    gesture_type = 3
+                elif gesture == 'tilit':
+                    gesture_type = 4
+
                 feature = watch_sensor.feature_generate(data)
 
                 if z == 0:
@@ -93,42 +96,22 @@ def init():
                     valid_x.append(preprocessing.scale(feature))
                     valid_y.append(gesture_type)
 
-    clf.fit(train_x + valid_x, train_y + valid_y)
+    if debug != True:
+        clf.fit(train_x + valid_x, train_y + valid_y)
+    else:
+        clf.fit(train_x, train_y)
 
-    '''
-    pinch_pinch = 0
-    pinch_wave = 0
-    pinch_rub = 0
-    wave_pinch = 0
-    wave_wave = 0
-    wave_rub = 0
-    rub_pinch = 0
-    rub_wave = 0
-    rub_rub = 0
-    for x, y in zip(valid_x, valid_y):
-        predicted = clf.predict([x])[0]
-        if y == 1 and predicted == 1:
-            pinch_pinch += 1
-        elif y == 1 and predicted == 4:
-            pinch_wave += 1
-        elif y == 1 and predicted == 2:
-            pinch_rub += 1
-        elif y == 4 and predicted == 4:
-            wave_wave += 1
-        elif y == 4 and predicted == 1:
-            wave_pinch += 1
-        elif y == 4 and predicted == 2:
-            wave_rub += 1
-        elif y == 2 and predicted == 2:
-            rub_rub += 1
-        elif y == 2 and predicted == 1:
-            rub_pinch += 1
-        elif y == 2 and predicted == 4:
-            rub_wave += 1
-    print pinch_pinch, pinch_wave, pinch_rub
-    print wave_pinch, wave_wave, wave_rub
-    print rub_pinch, rub_wave, rub_rub
-    '''
+        gesture_set = [1, 2, 3, 4]
+        result = [0] * (4 * 4)
+        for x, y in zip(valid_x, valid_y):
+            predicted = clf.predict([x])[0]
+            for g_i in gesture_set:
+                for g_j in gesture_set:
+                    if g_i == y and predicted == g_j:
+                        result[(g_i - 1)*len(gesture_set) + (g_j - 1)] += 1
+
+        for i in range(len(gesture_set)):
+            print result[i*len(gesture_set) : (i+1)*len(gesture_set)]
 
 
 def predict(features):
@@ -138,4 +121,5 @@ def predict(features):
 def predict_prob(features):
     return clf.predict_proba([preprocessing.scale(features)])[0]
 
-# init()
+if __name__ == '__main__':
+    init(debug=True)
