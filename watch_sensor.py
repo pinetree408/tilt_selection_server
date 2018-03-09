@@ -11,16 +11,19 @@ def data_parser(sens_type, sens_time, sens_x, sens_y, sens_z, windows):
             }
 
     window = windows[int(sens_type)]
-    if len(window) != 0 and (data_dict['time'] - window[0]['time']) > 1000:
-        window.pop(0)
+    if len(window) != 0:
+        while (len(window) > 0) and (data_dict['time'] - window[0]['time'] > 1000):
+            window.pop(0)
     window.append(data_dict)
 
+
+def check_prepared(windows):
     prepared = False
     for window_v in list(windows.values()):
         if len(window_v) == 0:
             break
         interval = window_v[len(window_v)-1]['time'] - window_v[0]['time']
-        if interval > 990 and interval < 1050:
+        if interval > 992 and interval <= 1000:
             prepared = True
         else:
             break

@@ -96,11 +96,8 @@ def init(debug=False):
                     valid_x.append(preprocessing.scale(feature))
                     valid_y.append(gesture_type)
 
-    if debug != True:
-        clf.fit(train_x + valid_x, train_y + valid_y)
-    else:
-        clf.fit(train_x, train_y)
-
+    clf.fit(train_x, train_y)
+    if debug == True:
         gesture_set = [1, 2, 3, 4]
         result = [0] * (4 * 4)
         for x, y in zip(valid_x, valid_y):

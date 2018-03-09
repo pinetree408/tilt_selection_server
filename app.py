@@ -5,7 +5,7 @@ from flask_socketio import SocketIO, emit
 
 import time
 import watch_sensor
-import simulation
+import svm
 
 
 def current_milli_time():
@@ -19,7 +19,7 @@ socketio = SocketIO(app, async_mode=None)
 
 thread_lock = Lock()
 
-simulation.init()
+svm.init()
 
 windows = {
     1: [],  # acc
@@ -31,9 +31,10 @@ start_time = None
 
 
 def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
-    global windows, start_time
-    prepared = watch_sensor.data_parser(
+    global windows, start_time, gesture_window
+    watch_sensor.data_parser(
         sens_type, sens_time, sens_x, sens_y, sens_z, windows)
+    prepared = watch_sensor.check_prepared(windows)
     if prepared:
         if start_time is None:
             start_time = current_milli_time()
@@ -41,8 +42,7 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
             if current_milli_time() - start_time > 20:
                 start_time = current_milli_time()
                 feature = watch_sensor.feature_generate(windows)
-                predicted = simulation.predict(feature)
-                print predicted
+                predicted = svm.predict(feature)
                 socketio.emit("response", {
                     'type': 'Server event',
                     'data': predicted,
