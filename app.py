@@ -28,10 +28,11 @@ windows = {
 }
 
 start_time = None
-
+predicted_window = []
+pre_predicted_gesture = -1
 
 def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
-    global windows, start_time, gesture_window
+    global windows, start_time, predicted_window, pre_predicted_gesture
     watch_sensor.data_parser(
         sens_type, sens_time, sens_x, sens_y, sens_z, windows)
     prepared = watch_sensor.check_prepared(windows)
@@ -39,16 +40,35 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
         if start_time is None:
             start_time = current_milli_time()
         else:
-            if current_milli_time() - start_time > 20:
+            if current_milli_time() - start_time > 50:
                 start_time = current_milli_time()
                 feature = watch_sensor.feature_generate(windows)
                 predicted = svm.predict(feature)
+                if predicted == 0:
+                    predicted_window.append(predicted)
+                else:
+                    if len(predicted_window) == 3:
+                        if (predicted_window[0] == predicted_window[1] and predicted_window[1] == predicted_window[2]):
+                            target = predicted_window[1]
+                            if (pre_predicted_gesture == 2) and target == 1:
+                                target = 2
+                            pre_predicted_gesture = target
+                            socketio.emit("response", {
+                                'type': 'Server event',
+                                'data': target,
+                                },
+                                namespace='/mynamespace',
+                                broadcast=True)
+                        predicted_window.pop(0)
+                    predicted_window.append(predicted)
+                '''
                 socketio.emit("response", {
                     'type': 'Server event',
                     'data': predicted,
                     },
                     namespace='/mynamespace',
                     broadcast=True)
+                '''
 
 
 @app.route('/')
