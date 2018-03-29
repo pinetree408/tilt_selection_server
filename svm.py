@@ -48,20 +48,21 @@ def init(debug=False):
 
                         window = []
                         lines = f_r.read().splitlines()
+
                         for i, line in enumerate(lines):
                             if i == 0:
                                 continue
                             data_list = line.split(',')
                             data_dict = {
-                                    'time': int(data_list[0].split('.')[0]),
+                                    'time': float(data_list[0]),
                                     'x': float(data_list[1]),
                                     'y': float(data_list[2]),
                                     'z': float(data_list[3]),
                                     }
                             data_time = data_dict['time']
-                            if 1000 <= data_time:
+                            if 1000 < data_time:
                                 if len(window) != 0 and \
-                                        data_time - window[0]['time'] > 1000:
+                                        data_time - window[0]['time'] >= 1000:
                                     windows[data_type].append(window)
                                     if len(windows[data_type]) == 20 * (j + 1):
                                         break

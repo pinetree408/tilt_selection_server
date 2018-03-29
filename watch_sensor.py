@@ -34,7 +34,7 @@ def feature_generate(windows):
     features = []
     for index in [1, 4, 10]:
         window = windows[index]
-        start_time = window[0]['time']
+        start_time = int(window[0]['time'])
         interp = [i for i in range(start_time, start_time + 1000, 10)]
         time = [data['time'] for data in window]
         x = [data['x'] for data in window]
