@@ -44,6 +44,8 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
                 start_time = current_milli_time()
                 feature = watch_sensor.feature_generate(windows)
                 predicted = svm.predict(feature)
+                probs = svm.predict_prob(feature)
+                print probs
                 if predicted == 0:
                     predicted_window.append(predicted)
                 else:

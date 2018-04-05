@@ -4,7 +4,7 @@ import math
 
 def data_parser(sens_type, sens_time, sens_x, sens_y, sens_z, windows):
     data_dict = {
-            'time': int(sens_time),
+            'time': float(sens_time),
             'x': float(sens_x),
             'y': float(sens_y),
             'z': float(sens_z),
@@ -12,7 +12,7 @@ def data_parser(sens_type, sens_time, sens_x, sens_y, sens_z, windows):
 
     window = windows[int(sens_type)]
     if len(window) != 0:
-        while (len(window) > 0) and (data_dict['time'] - window[0]['time'] > 1000):
+        while (len(window) > 0) and (data_dict['time'] - window[0]['time'] >= 1000):
             window.pop(0)
     window.append(data_dict)
 
@@ -34,8 +34,10 @@ def feature_generate(windows):
     features = []
     for index in [1, 4, 10]:
         window = windows[index]
-        start_time = int(window[0]['time'])
-        interp = [i for i in range(start_time, start_time + 1000, 10)]
+        start_time = window[0]['time']
+        interp = []
+        for i in range(0, 1000, 10):
+            interp.append(start_time + i)
         time = [data['time'] for data in window]
         x = [data['x'] for data in window]
         y = [data['y'] for data in window]
