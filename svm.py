@@ -28,11 +28,7 @@ def init(debug=False):
                 4: [],  # gyr
                 10: []  # lin
             }
-            windows_recalculation = {
-                1: [],  # acc
-                4: [],  # gyr
-                10: []  # lin
-            }
+
             target_list = []
             for k in range(3):
                 target_list.append(gesture+str(k+1))
@@ -53,7 +49,6 @@ def init(debug=False):
                         window = []
                         lines = f_r.read().splitlines()
 
-                        raw_data_list = []
                         for i, line in enumerate(lines):
                             if i == 0:
                                 continue
@@ -64,7 +59,6 @@ def init(debug=False):
                                     'y': float(data_list[2]),
                                     'z': float(data_list[3]),
                                     }
-                            raw_data_list.append(data_dict)
                             data_time = data_dict['time']
                             if 1000 < data_time:
                                 if len(window) != 0 and \
@@ -74,20 +68,6 @@ def init(debug=False):
                                         break
                                     window = [data_dict]
                                 window.append(data_dict)
-                        '''
-                        window_recalculation = []
-                        for t, data in enumerate(raw_data_list):
-                            if data['time'] <= 1000:
-                                continue
-                            if data['time'] > windows[data_type][-1][-1]['time']:
-                                break
-                            for u in range(t, len(raw_data_list)):
-                                if len(window) != 0 and raw_data_list[u]['time'] - data['time'] >= 1000:
-                                    windows_recalculation[data_type].append(window_recalculation)
-                                    window_recalculation = [data]
-                                window_recalculation.append(data)
-                        '''
-
             pre_data[gesture] = windows
 
         for gesture in ['pinch', 'wave', 'keep', 'tilit']:

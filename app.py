@@ -20,6 +20,7 @@ socketio = SocketIO(app, async_mode=None)
 thread_lock = Lock()
 
 svm.init()
+print "svm -- initialize"
 
 windows = {
     1: [],  # acc
@@ -30,6 +31,7 @@ windows = {
 start_time = None
 predicted_window = []
 pre_predicted_gesture = -1
+
 
 def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
     global windows, start_time, predicted_window, pre_predicted_gesture
@@ -43,15 +45,17 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
             if current_milli_time() - start_time > 50:
                 start_time = current_milli_time()
                 feature = watch_sensor.feature_generate(windows)
-                predicted = svm.predict(feature)
-                probs = svm.predict_prob(feature)
-                print probs
-                if predicted == 0:
-                    predicted_window.append(predicted)
-                else:
-                    if len(predicted_window) == 3:
-                        if (predicted_window[0] == predicted_window[1] and predicted_window[1] == predicted_window[2]):
-                            target = predicted_window[1]
+                probs = list(svm.predict_prob(feature))
+                max_prob = max(probs)
+                predicted = [probs.index(max_prob), max_prob]
+                if len(predicted_window) == 3:
+                    print predicted_window
+                    if (predicted_window[0][0] == predicted_window[1][0]\
+                            and predicted_window[1][0] == predicted_window[2][0]):
+                        if (predicted_window[0][1] > 0.4\
+                                and predicted_window[1][1] > 0.4
+                                and predicted_window[2][1] > 0.4):
+                            target = predicted_window[1][0] + 1
                             if (pre_predicted_gesture == 2) and target == 1:
                                 target = 2
                             pre_predicted_gesture = target
@@ -61,16 +65,8 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
                                 },
                                 namespace='/mynamespace',
                                 broadcast=True)
-                        predicted_window.pop(0)
-                    predicted_window.append(predicted)
-                '''
-                socketio.emit("response", {
-                    'type': 'Server event',
-                    'data': predicted,
-                    },
-                    namespace='/mynamespace',
-                    broadcast=True)
-                '''
+                    predicted_window.pop(0)
+                predicted_window.append(predicted)
 
 
 @app.route('/')
