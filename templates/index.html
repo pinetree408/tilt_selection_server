@@ -8,16 +8,20 @@
     $(document).ready(function(){
       socket = io.connect('http://' + document.domain + ':' + location.port + '/mynamespace');
       socket.on('response', function(msg){
-	var gesture = '';
-	if (msg.data == 1) {
-          gesture = 'pinch';
-	} else if (msg.data == 2){
-          gesture = 'wave';
+        if (msg.type == 'Predicted') {
+	  var gesture = '';
+	  if (msg.data == 1) {
+            gesture = 'pinch';
+	  } else if (msg.data == 2){
+            gesture = 'wave';
+	  } else {
+	    gesture = 'nothing';
+	  }
+	  console.log(gesture);
+          $('#sentence').text(gesture);
 	} else {
-	  gesture = 'nothing';
+	  console.log(msg.data);
 	}
-	console.log(gesture);
-        $('#sentence').text(gesture);
       });
     });
     </script>

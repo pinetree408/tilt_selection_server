@@ -49,7 +49,6 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
                 max_prob = max(probs)
                 predicted = [probs.index(max_prob), max_prob]
                 if len(predicted_window) == 3:
-                    print predicted_window
                     if (predicted_window[0][0] == predicted_window[1][0]\
                             and predicted_window[1][0] == predicted_window[2][0]):
                         if (predicted_window[0][1] > 0.4\
@@ -60,7 +59,7 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
                                 target = 2
                             pre_predicted_gesture = target
                             socketio.emit("response", {
-                                'type': 'Server event',
+                                'type': 'Predicted',
                                 'data': target,
                                 },
                                 namespace='/mynamespace',
@@ -79,14 +78,33 @@ def connect():
     print "Connect"
     emit("response", {
         'type': 'System',
-        'data': 'Connected'
+        'data': 'Connected',
     })
 
 
 @socketio.on('disconnect', namespace='/mynamespace')
 def disconnect():
     print "Disconnect"
+    emit("response", {
+        'type': 'System',
+        'data': 'Disconnected'
+    })
 
+@socketio.on('start', namespace='/mynamespace')
+def start():
+    print "Task Start"
+    emit("response", {
+        'type': 'System',
+        'data': 'Task Start'
+    }, broadcast=True)
+
+@socketio.on('done', namespace='/mynamespace')
+def done():
+    print "Task Done"
+    emit("response", {
+        'type': 'System',
+        'data': 'Task Done'
+    }, broadcast=True)
 
 @socketio.on("request", namespace='/mynamespace')
 def request(sens_type, sens_time, sens_x, sens_y, sens_z):
