@@ -6,7 +6,7 @@ from flask_socketio import SocketIO, emit
 import time
 import watch_sensor
 import svm
-
+import csv
 
 def current_milli_time():
     return int(round(time.time() * 1000))
@@ -32,9 +32,13 @@ start_time = None
 predicted_window = []
 pre_predicted_gesture = -1
 
+now_target = ''
+f = None
+csv_wr = None
+
 
 def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
-    global windows, start_time, predicted_window, pre_predicted_gesture
+    global windows, start_time, predicted_window, pre_predicted_gesture, csv_wr
     watch_sensor.data_parser(
         sens_type, sens_time, sens_x, sens_y, sens_z, windows)
     prepared = watch_sensor.check_prepared(windows)
@@ -58,6 +62,10 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
                             if (pre_predicted_gesture == 2) and target == 1:
                                 target = 2
                             pre_predicted_gesture = target
+
+                            if csv_wr != None:
+                                csv_wr.writerow([now_index, now_target, target])
+
                             socketio.emit("response", {
                                 'type': 'Predicted',
                                 'data': target,
@@ -93,18 +101,25 @@ def disconnect():
 @socketio.on('start', namespace='/mynamespace')
 def start():
     print "Task Start"
-    emit("response", {
-        'type': 'System',
-        'data': 'Task Start'
-    }, broadcast=True)
+    global f, csv_wr
+    f = open('sb_2.csv', 'wb')
+    csv_wr = csv.writer(f)
+
+@socketio.on('intask', namespace='/mynamespace')
+def intask(index, target):
+    global now_index, now_target
+    now_index = index
+    now_target = target
+    print now_index, now_target
+
 
 @socketio.on('done', namespace='/mynamespace')
 def done():
+    global f, csv_wr
     print "Task Done"
-    emit("response", {
-        'type': 'System',
-        'data': 'Task Done'
-    }, broadcast=True)
+    f.close()
+    f = None
+    csv_wr = None
 
 @socketio.on("request", namespace='/mynamespace')
 def request(sens_type, sens_time, sens_x, sens_y, sens_z):

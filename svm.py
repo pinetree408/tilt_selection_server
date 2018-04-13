@@ -22,7 +22,7 @@ def init(debug=False):
 
         pre_data = {}
 
-        for gesture in ['pinch', 'wave', 'keep', 'tilit']:
+        for gesture in ['pinch', 'wave', 'keep', 'tilt']:
             windows = {
                 1: [],  # acc
                 4: [],  # gyr
@@ -64,13 +64,13 @@ def init(debug=False):
                                 if len(window) != 0 and \
                                         data_time - window[0]['time'] >= 1000:
                                     windows[data_type].append(window)
-                                    if len(windows[data_type]) == 20 * (j + 1):
+                                    if len(windows[data_type]) == 22 * (j + 1):
                                         break
                                     window = [data_dict]
                                 window.append(data_dict)
             pre_data[gesture] = windows
 
-        for gesture in ['pinch', 'wave', 'keep', 'tilit']:
+        for gesture in ['pinch', 'wave', 'keep', 'tilt']:
             windows = pre_data[gesture]
             for i in range(len(windows[1])):
                 data = {
@@ -85,17 +85,21 @@ def init(debug=False):
                     gesture_type = 2
                 elif gesture == 'keep':
                     gesture_type = 3
-                elif gesture == 'tilit':
+                elif gesture == 'tilt':
                     gesture_type = 4
 
                 feature = watch_sensor.feature_generate(data)
 
-                if z == 0:
+                if debug == True:
+                    if z == 0:
+                        train_x.append(preprocessing.scale(feature))
+                        train_y.append(gesture_type)
+                    elif z == 1:
+                        valid_x.append(preprocessing.scale(feature))
+                        valid_y.append(gesture_type)
+                else:
                     train_x.append(preprocessing.scale(feature))
                     train_y.append(gesture_type)
-                elif z == 1:
-                    valid_x.append(preprocessing.scale(feature))
-                    valid_y.append(gesture_type)
 
     clf.fit(train_x, train_y)
     if debug == True:
