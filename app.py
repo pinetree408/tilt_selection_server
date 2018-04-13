@@ -63,8 +63,14 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
                                 target = 2
                             pre_predicted_gesture = target
 
+                            printed = "nothing"
+                            if target == 1:
+                                printed = "Pinch"
+                            elif target == 2:
+                                printed = "Wave"
+
                             if csv_wr != None:
-                                csv_wr.writerow([now_index, now_target, target])
+                                csv_wr.writerow([now_index, now_target, printed])
 
                             socketio.emit("response", {
                                 'type': 'Predicted',
@@ -102,7 +108,7 @@ def disconnect():
 def start():
     print "Task Start"
     global f, csv_wr
-    f = open('sb_2.csv', 'wb')
+    f = open('p1.csv', 'ab')
     csv_wr = csv.writer(f)
 
 @socketio.on('intask', namespace='/mynamespace')
