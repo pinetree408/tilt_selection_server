@@ -38,9 +38,10 @@ now_target = ''
 f = None
 csv_wr = None
 
+gesture_lock = False
 
 def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
-    global windows, start_time, predicted_window, pre_predicted_gesture, csv_wr
+    global windows, start_time, predicted_window, pre_predicted_gesture, csv_wr, gesture_lock
     watch_sensor.data_parser(
         sens_type, sens_time, sens_x, sens_y, sens_z, windows)
     prepared = watch_sensor.check_prepared(windows)
@@ -73,6 +74,11 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
 
                             if csv_wr != None:
                                 csv_wr.writerow([now_index, now_target, printed])
+
+                            if target == 1 or target == 2:
+                                gesture_lock = True
+                            else:
+                                gesture_lock = False
 
                             socketio.emit("response", {
                                 'type': 'Predicted',
@@ -131,10 +137,12 @@ def done():
 
 @socketio.on('tilt', namespace='/mynamespace')
 def Tilt(tilt):
-    emit("response", {
-        'type': 'Tilt',
-        'data': tilt
-    }, broadcast=True)
+    global gesture_lock
+    if not gesture_lock:
+        emit("response", {
+            'type': 'Tilt',
+            'data': tilt
+        }, broadcast=True)
 
 
 @socketio.on("request", namespace='/mynamespace')

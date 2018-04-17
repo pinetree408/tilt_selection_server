@@ -7,73 +7,156 @@
     <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
     $(document).ready(function(){
-      var nowIndex = 0;
+      var songIdList = [
+        'nZbUcmvW4TA', 'i0p1bmr0EmE', 'cDq1vUwM21k', 'dDeewpPQOK0', 'd1D1SJ-KqaQ',
+        'TKAGKFBh4W8', 'uid4xGVmJt8', 'wowAOdTYqw8', '0FB2EoKTK_Q', 'vecSVX1QYbQ'
+      ];
+      var songNameList = [
+        '지나오다-닐로', 'What is Love?-트와이스', '붕붕-김하온', '바코드-김하온,빈첸', 'EVERYDAY-WINNER',
+        '전혀-빈첸', 'You-멜로망스', '꽃 길-BIGBANG', '별이 빛나는 밤-마마무', '사랑을 했다-iKON'
+      ];
+      for (var item = 0; item < songNameList.length; item++) {
+        $("#list").append(
+          "<li>" + 
+            "<div class='song-id'>" + (item + 1) + "</div>" +  
+	    "<div class='song-track'>" + songNameList[item].split('-')[0] + "</div>" + 
+	    "<div class='song-artist'>" + songNameList[item].split('-')[1] + "</div>" + 
+	  "</li>"
+	);
+      }
 
+      var nowIndex = 0;
       var socket = io.connect('http://' + document.domain + ':' + location.port + '/mynamespace');
       socket.on('response', function(msg){
         if (msg.type == 'Predicted') {
-	  var gesture = '';
 	  if (msg.data == 1) {
-            gesture = 'pinch';
-            $("#selected").text(nowIndex);
+            // pinch
+            player.loadVideoById(songIdList[Math.floor(nowIndex)]);
 	  } else if (msg.data == 2){
-            gesture = 'wave';
-            $("#selected").text("Nothing");
-	  } else {
-	    gesture = 'nothing';
+            // wave
+            player.stopVideo();
 	  }
 	} else if (msg.type == 'System') {
-	  console.log(msg.data);
+          for (var i = 0; i < $("#list").children().length; i++) {
+            var color = '#00000000';
+            if (i == nowIndex) {
+              color = '#5E183D80';
+	    }
+            $("#list").children().eq(i).css('background-color', color);
+	  }
 	} else if (msg.type == 'Tilt') {
+          var color = '#00000000';
+          $("#list").children().eq(nowIndex).css('background-color', color);
           if (msg.data == 1) {
             nowIndex++;
             if (nowIndex > $("#list").children().length - 1) {
 	      nowIndex = $("#list").children().length - 1;
 	    }
-            for (var i = 0; i < $("#list").children().length; i++) {
-              if (i == nowIndex) {
-                $("#list").children().eq(nowIndex).css('background-color', 'lime');
-	      } else {
-                $("#list").children().eq(i).css('background-color', 'white');
-	      }
-	    }
 	  } else {
             nowIndex--;
             if (nowIndex < 0) {
               nowIndex = 0;
-	    }
-            for (var i = 0; i < $("#list").children().length; i++) {
-              if (i == nowIndex) {
-                $("#list").children().eq(nowIndex).css('background-color', 'lime');
-	      } else {
-                $("#list").children().eq(i).css('background-color', 'white');
-	      }
-	    }
+	    } 
 	  }
-	}
+          color = '#5E183D80';
+          $("#list").children().eq(nowIndex).css('background-color', color);
+	} 
       });
     });
     </script>
     <style>
-      ul {
-        width: 300px;
-        height: 500px;
-        list-style: none;
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #696969;
       }
-      ul li div {
+      .column {
+        float: left;
+        width: 50%;
+      }
+      .row {
+      }
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+      ul {
         width: 100%;
         height: 100%;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      ul li {
+        width: 100%;
+        height: 64px;
+      }
+      ul li div {
+        height: 54px;
+        padding: 5px;
+        text-align: center; 
+        line-height: 54px;
+        float: left;
+        color: white;
+      }
+      .song-id {
+        width: calc(10% - 10px);
+      }
+      .song-track {
+        width: calc(70% - 10px);
+      }
+      .song-artist {
+        width: calc(20% - 10px);
+      }
+      .header {
+        width: 100%;
+        height: 60px;
+      }
+      .header div {
+        height: 50px;
+        padding: 5px;
+        text-align: center; 
+        line-height: 50px;
+        float: left;
+        color: #a9a9a9;
       }
     </style>
   </head>
   <body>
-    <div id="selected">Nothing</div>
-    <ul id="list">
-      <li><div>1</div></li>
-      <li><div>2</div></li>
-      <li><div>3</div></li>
-      <li><div>4</div></li>
-      <li><div>5</div></li>
-    </ul>
+    <div class="row">
+      <div class="column">
+        <div class="header">
+          <div class="song-id">No.</div>
+          <div class="song-track">Track</div>
+          <div class="song-artist">Artist</div>
+        </div>
+        <ul id="list"></ul>
+      </div>
+      <div class="column">
+        <div id="player"></div>
+      </div>
+    </div>
+    <script>
+      var tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: '660',
+          width: '100%',
+          videoId: '',
+          origin: 'http://localhost:5000/',
+          events: {
+            'onReady': onPlayerReady,
+          }
+        });
+      }
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+    </script> 
   </body>
 </html>
