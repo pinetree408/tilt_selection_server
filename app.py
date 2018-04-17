@@ -7,6 +7,8 @@ import time
 import watch_sensor
 import svm
 import csv
+import config
+
 
 def current_milli_time():
     return int(round(time.time() * 1000))
@@ -108,7 +110,7 @@ def disconnect():
 def start():
     print "Task Start"
     global f, csv_wr
-    f = open('p1.csv', 'ab')
+    f = open(config.USER_NAME + '.csv', 'ab')
     csv_wr = csv.writer(f)
 
 @socketio.on('intask', namespace='/mynamespace')

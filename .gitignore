@@ -6,3 +6,7 @@ venv/
 
 # for python
 *.py[cod]
+
+# for this project
+result/
+SensorLog/exp/
