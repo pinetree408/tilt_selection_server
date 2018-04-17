@@ -1,1 +1,2 @@
-USER_NAME = 'p10'
+USER_DIR = 'pilot'
+USER_NAME = 'yb'

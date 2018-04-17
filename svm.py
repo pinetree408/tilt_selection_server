@@ -18,7 +18,7 @@ def init(debug=False):
     valid_y = []
 
     for z in range(2):
-        mypath = 'SensorLog/' + config.USER_NAME + '_' + str(z+1)
+        mypath = 'SensorLog/' + config.USER_DIR + '/' + config.USER_NAME + '_' + str(z+1)
         onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
         pre_data = {}

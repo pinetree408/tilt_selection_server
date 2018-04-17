@@ -129,6 +129,14 @@ def done():
     f = None
     csv_wr = None
 
+@socketio.on('tilt', namespace='/mynamespace')
+def Tilt(tilt):
+    emit("response", {
+        'type': 'Tilt',
+        'data': tilt
+    }, broadcast=True)
+
+
 @socketio.on("request", namespace='/mynamespace')
 def request(sens_type, sens_time, sens_x, sens_y, sens_z):
     with thread_lock:
