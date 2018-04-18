@@ -28,6 +28,7 @@
       var nowIndex = 0;
       var socket = io.connect('http://' + document.domain + ':' + location.port + '/mynamespace');
       socket.on('response', function(msg){
+	console.log(msg.type);
         if (msg.type == 'Predicted') {
 	  if (msg.data == 1) {
             // pinch

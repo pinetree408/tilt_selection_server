@@ -55,6 +55,12 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
                 probs = list(svm.predict_prob(feature))
                 max_prob = max(probs)
                 predicted = [probs.index(max_prob), max_prob]
+
+                if probs.index(max_prob) + 1 == 1 or probs.index(max_prob) + 1 == 2:
+                    gesture_lock = True
+                else:
+                    gesture_lock = False
+
                 if len(predicted_window) == 3:
                     if (predicted_window[0][0] == predicted_window[1][0]\
                             and predicted_window[1][0] == predicted_window[2][0]):
@@ -74,11 +80,6 @@ def background_thread(sens_type, sens_time, sens_x, sens_y, sens_z):
 
                             if csv_wr != None:
                                 csv_wr.writerow([now_index, now_target, printed])
-
-                            if target == 1 or target == 2:
-                                gesture_lock = True
-                            else:
-                                gesture_lock = False
 
                             socketio.emit("response", {
                                 'type': 'Predicted',
