@@ -22,7 +22,7 @@ socketio = SocketIO(app, async_mode=None)
 thread_lock = Lock()
 
 svm.init()
-print "svm -- initialize"
+print("svm -- initialize")
 
 windows = {
     1: [],  # acc
@@ -98,7 +98,7 @@ def index():
 
 @socketio.on('connect', namespace='/mynamespace')
 def connect():
-    print "Connect"
+    print("Connect")
     emit("response", {
         'type': 'System',
         'data': 'Connected',
@@ -107,7 +107,7 @@ def connect():
 
 @socketio.on('disconnect', namespace='/mynamespace')
 def disconnect():
-    print "Disconnect"
+    print("Disconnect")
     emit("response", {
         'type': 'System',
         'data': 'Disconnected'
@@ -115,7 +115,7 @@ def disconnect():
 
 @socketio.on('start', namespace='/mynamespace')
 def start():
-    print "Task Start"
+    print("Task Start")
     global f, csv_wr
     f = open(config.USER_NAME + '.csv', 'ab')
     csv_wr = csv.writer(f)
@@ -125,13 +125,13 @@ def intask(index, target):
     global now_index, now_target
     now_index = index
     now_target = target
-    print now_index, now_target
+    print(now_index, now_target)
 
 
 @socketio.on('done', namespace='/mynamespace')
 def done():
     global f, csv_wr
-    print "Task Done"
+    print("Task Done")
     f.close()
     f = None
     csv_wr = None
