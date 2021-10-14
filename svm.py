@@ -114,7 +114,7 @@ def init(debug=False):
                         result[(g_i - 1)*len(gesture_set) + (g_j - 1)] += 1
 
         for i in range(len(gesture_set)):
-            print result[i*len(gesture_set) : (i+1)*len(gesture_set)]
+            print(result[i*len(gesture_set) : (i+1)*len(gesture_set)])
 
 
 def predict(features):
