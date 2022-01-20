@@ -1,2 +1,1 @@
-### #research:hci
-# tilt_selection_server
+# Tilt Selection Interface Server
